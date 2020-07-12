@@ -1,0 +1,220 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Nginx1.16.1的安装 | Dave</title><meta name="description" content="Nginx1.16.1的安装"><meta name="keywords" content="Nginx"><meta name="author" content="liusheng"><meta name="copyright" content="liusheng"><meta name="format-detection" content="telephone=no"><link rel="shortcut icon" href="/myblog/myblog/img/favicon.ico"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="https://fonts.googleapis.com" crossorigin="crossorigin"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="twitter:card" content="summary"><meta name="twitter:title" content="Nginx1.16.1的安装"><meta name="twitter:description" content="Nginx1.16.1的安装"><meta name="twitter:image" content="https://liusheng1992.github.io/myblog/myblog/img/post.jpg"><meta property="og:type" content="article"><meta property="og:title" content="Nginx1.16.1的安装"><meta property="og:url" content="https://liusheng1992.github.io/myblog/2020/07/12/nginx1/"><meta property="og:site_name" content="Dave"><meta property="og:description" content="Nginx1.16.1的安装"><meta property="og:image" content="https://liusheng1992.github.io/myblog/myblog/img/post.jpg"><script src="https://cdn.jsdelivr.net/npm/js-cookie/dist/js.cookie.min.js"></script><script>var autoChangeMode = '2'
+var t = Cookies.get("theme")
+if (autoChangeMode == '1'){
+  var isDarkMode = window.matchMedia("(prefers-color-scheme: dark)").matches
+  var isLightMode = window.matchMedia("(prefers-color-scheme: light)").matches
+  var isNotSpecified = window.matchMedia("(prefers-color-scheme: no-preference)").matches
+  var hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+  if (t === undefined){
+    if (isLightMode) activateLightMode()
+    else if (isDarkMode) activateDarkMode()
+    else if (isNotSpecified || hasNoSupport){
+      console.log('You specified no preference for a color scheme or your browser does not support it. I Schedule dark mode during night time.')
+      var now = new Date()
+      var hour = now.getHours()
+      var isNight = hour < 6 || hour >= 18
+      isNight ? activateDarkMode() : activateLightMode()
+  }
+  } else if (t == 'light') activateLightMode()
+  else activateDarkMode()
+
+} else if (autoChangeMode == '2'){
+  now = new Date();
+  hour = now.getHours();
+  isNight = hour < 6 || hour >= 18
+  if(t === undefined) isNight? activateDarkMode() : activateLightMode()
+  else if (t === 'light') activateLightMode()
+  else activateDarkMode() 
+} else {
+  if ( t == 'dark' ) activateDarkMode()
+  else if ( t == 'light') activateLightMode()
+}
+
+function activateDarkMode(){
+  document.documentElement.setAttribute('data-theme', 'dark')
+  if (document.querySelector('meta[name="theme-color"]') !== null){
+    document.querySelector('meta[name="theme-color"]').setAttribute('content','#000')
+  }
+}
+function activateLightMode(){
+  document.documentElement.setAttribute('data-theme', 'light')
+  if (document.querySelector('meta[name="theme-color"]') !== null){
+  document.querySelector('meta[name="theme-color"]').setAttribute('content','#fff')
+  }
+}</script><link rel="stylesheet" href="/myblog/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@latest/css/font-awesome.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><link rel="canonical" href="https://liusheng1992.github.io/myblog/2020/07/12/nginx1/"><link rel="next" title="CentOS7 防火墙操作" href="https://liusheng1992.github.io/myblog/2020/04/16/firewalld/"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Titillium+Web"><script>var GLOBAL_CONFIG = { 
+  root: '/myblog/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: {"defaultEncoding":2,"translateDelay":0,"cookieDomain":"https://xxx/","msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  bookmark: {
+    message_prev: '按',
+    message_next: '键将本页加入书签'
+  },
+  runtime_unit: '天',
+  runtime: true,
+  copyright: undefined,
+  ClickShowText: undefined,
+  medium_zoom: false,
+  fancybox: true,
+  Snackbar: undefined,
+  baiduPush: false,
+  highlightCopy: false,
+  highlightLang: false,
+  highlightShrink: 'none',
+  isFontAwesomeV5: false,
+  isPhotoFigcaption: false
+  
+}</script><script>var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isSidebar: true  
+  }</script><noscript><style>
+#page-header {
+  opacity: 1
+}
+.justified-gallery img{
+  opacity: 1
+}
+</style></noscript><meta name="generator" content="Hexo 4.2.0"></head><body><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" src="/myblog/img/avatar.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/myblog/archives/"><div class="headline">文章</div><div class="length_num">2</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/myblog/tags/"><div class="headline">标签</div><div class="length_num">2</div></a></div></div><div class="mobile_data_item is-center">     <div class="mobile_data_link"><a href="/myblog/categories/"><div class="headline">分类</div><div class="length_num">2</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/myblog/"><i class="fa-fw fa fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/myblog/archives/"><i class="fa-fw fa fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/myblog/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/myblog/categories/"><i class="fa-fw fa fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/myblog/about/"><i class="fa-fw fa fa-heart"></i><span> 关于</span></a></div></div></div></div><i class="fa fa-arrow-right on" id="toggle-sidebar" aria-hidden="true">     </i><div id="sidebar"><div class="sidebar-toc"><div class="sidebar-toc__title">目录</div><div class="sidebar-toc__progress"><span class="progress-notice">你已经读了</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar">     </div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-下载对应的nginx包-推荐使用稳定版本"><span class="toc-number">1.</span> <span class="toc-text">1. 下载对应的nginx包(推荐使用稳定版本)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-上传nginx到linux系统"><span class="toc-number">2.</span> <span class="toc-text">2. 上传nginx到linux系统</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-安装依赖环境"><span class="toc-number">3.</span> <span class="toc-text">3. 安装依赖环境</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1-安装gcc环境"><span class="toc-number">3.1.</span> <span class="toc-text">3.1 安装gcc环境</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2-安装PCRE库，用于解析正则表达式"><span class="toc-number">3.2.</span> <span class="toc-text">3.2 安装PCRE库，用于解析正则表达式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3-zlib压缩包和解压包依赖"><span class="toc-number">3.3.</span> <span class="toc-text">3.3 zlib压缩包和解压包依赖</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4-SSL安全的加密的套接字协议层，用于HTTP安全传输，也就是https"><span class="toc-number">3.4.</span> <span class="toc-text">3.4 SSL安全的加密的套接字协议层，用于HTTP安全传输，也就是https</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-解压，需要注意，解压后得到的是源码，需要编译后才能安装"><span class="toc-number">4.</span> <span class="toc-text">4. 解压，需要注意，解压后得到的是源码，需要编译后才能安装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-编译之前，先创建nginx临时目录，如果不创建，在启动nginx的过程中会报错"><span class="toc-number">5.</span> <span class="toc-text">5. 编译之前，先创建nginx临时目录，如果不创建，在启动nginx的过程中会报错</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-在nginx解压目录，输入如下命令进行配置，目的是为了创建makefile文件"><span class="toc-number">6.</span> <span class="toc-text">6. 在nginx解压目录，输入如下命令进行配置，目的是为了创建makefile文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-make编译"><span class="toc-number">7.</span> <span class="toc-text">7. make编译</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-安装"><span class="toc-number">8.</span> <span class="toc-text">8. 安装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-进入-usr-local-nginx-sbin目录启动nginx"><span class="toc-number">9.</span> <span class="toc-text">9. 进入&#x2F;usr&#x2F;local&#x2F;nginx&#x2F;sbin目录启动nginx</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-打开浏览器，访问虚拟机所处内网ip即可nginx默认页面"><span class="toc-number">10.</span> <span class="toc-text">10. 打开浏览器，访问虚拟机所处内网ip即可nginx默认页面</span></a></li></ol></div></div></div><div id="body-wrap"><div class="post-bg" id="nav" style="background-image: url(/myblog/img/post.jpg)"><div id="page-header"><span class="pull_left" id="blog_name"><a class="blog_title" id="site-name" href="/myblog/">Dave</a></span><span class="pull_right menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/myblog/"><i class="fa-fw fa fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/myblog/archives/"><i class="fa-fw fa fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/myblog/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/myblog/categories/"><i class="fa-fw fa fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/myblog/about/"><i class="fa-fw fa fa-heart"></i><span> 关于</span></a></div></div><span class="toggle-menu close"><a class="site-page"><i class="fa fa-bars fa-fw" aria-hidden="true"></i></a></span></span></div><div id="post-info"><div id="post-title"><div class="posttitle">Nginx1.16.1的安装</div></div><div id="post-meta"><div class="meta-firstline"><time class="post-meta__date"><span class="post-meta__date-created" title="发表于 2020-07-12 20:58:48"><i class="fa fa-calendar" aria-hidden="true"></i> 发表于 2020-07-12</span><span class="post-meta__separator">|</span><span class="post-meta__date-updated" title="更新于 2020-07-12 21:04:27"><i class="fa fa-history" aria-hidden="true"></i> 更新于 2020-07-12</span></time><span class="post-meta__categories"><span class="post-meta__separator">|</span><i class="fa fa-inbox post-meta__icon" aria-hidden="true"></i><a class="post-meta__categories" href="/myblog/categories/Nginx/">Nginx</a></span></div><div class="meta-secondline"> </div><div class="meta-thirdline"><span class="post-meta-pv-cv"><i class="fa fa-eye post-meta__icon" aria-hidden="true"> </i><span>阅读量:</span><span id="busuanzi_value_page_pv"></span></span><span class="post-meta-commentcount"></span></div></div></div></div><main class="layout_post" id="content-inner"><article id="post"><div id="article-container"><h2 id="1-下载对应的nginx包-推荐使用稳定版本"><a href="#1-下载对应的nginx包-推荐使用稳定版本" class="headerlink" title="1. 下载对应的nginx包(推荐使用稳定版本)"></a>1. 下载对应的nginx包(推荐使用稳定版本)</h2><ul>
+<li>nginx官网：<a href="http://nginx.org/" target="_blank" rel="noopener">http://nginx.org/</a></li>
+</ul>
+<h2 id="2-上传nginx到linux系统"><a href="#2-上传nginx到linux系统" class="headerlink" title="2. 上传nginx到linux系统"></a>2. 上传nginx到linux系统</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">mkdir /home/software</span><br><span class="line"></span><br><span class="line">scp 本地nginx压缩包 root@ip:/home/software</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-安装依赖环境"><a href="#3-安装依赖环境" class="headerlink" title="3. 安装依赖环境"></a>3. 安装依赖环境</h2><h3 id="3-1-安装gcc环境"><a href="#3-1-安装gcc环境" class="headerlink" title="3.1 安装gcc环境"></a>3.1 安装gcc环境</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">yum install gcc-c++</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-2-安装PCRE库，用于解析正则表达式"><a href="#3-2-安装PCRE库，用于解析正则表达式" class="headerlink" title="3.2 安装PCRE库，用于解析正则表达式"></a>3.2 安装PCRE库，用于解析正则表达式</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">yum install -y pcre pcre-devel</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-3-zlib压缩包和解压包依赖"><a href="#3-3-zlib压缩包和解压包依赖" class="headerlink" title="3.3 zlib压缩包和解压包依赖"></a>3.3 zlib压缩包和解压包依赖</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">yum install -y zlib zlib-devel</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-4-SSL安全的加密的套接字协议层，用于HTTP安全传输，也就是https"><a href="#3-4-SSL安全的加密的套接字协议层，用于HTTP安全传输，也就是https" class="headerlink" title="3.4 SSL安全的加密的套接字协议层，用于HTTP安全传输，也就是https"></a>3.4 SSL安全的加密的套接字协议层，用于HTTP安全传输，也就是https</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">yum install -y openssl openssl-devel</span><br></pre></td></tr></table></figure>
+
+<h2 id="4-解压，需要注意，解压后得到的是源码，需要编译后才能安装"><a href="#4-解压，需要注意，解压后得到的是源码，需要编译后才能安装" class="headerlink" title="4. 解压，需要注意，解压后得到的是源码，需要编译后才能安装"></a>4. 解压，需要注意，解压后得到的是源码，需要编译后才能安装</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">tar -zxvf nginx-1.16.1.tar.gz</span><br></pre></td></tr></table></figure>
+
+<h2 id="5-编译之前，先创建nginx临时目录，如果不创建，在启动nginx的过程中会报错"><a href="#5-编译之前，先创建nginx临时目录，如果不创建，在启动nginx的过程中会报错" class="headerlink" title="5. 编译之前，先创建nginx临时目录，如果不创建，在启动nginx的过程中会报错"></a>5. 编译之前，先创建nginx临时目录，如果不创建，在启动nginx的过程中会报错</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">mkdir /var/temp/nginx -p</span><br></pre></td></tr></table></figure>
+
+<h2 id="6-在nginx解压目录，输入如下命令进行配置，目的是为了创建makefile文件"><a href="#6-在nginx解压目录，输入如下命令进行配置，目的是为了创建makefile文件" class="headerlink" title="6. 在nginx解压目录，输入如下命令进行配置，目的是为了创建makefile文件"></a>6. 在nginx解压目录，输入如下命令进行配置，目的是为了创建makefile文件</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">./configure \</span><br><span class="line">--prefix=/usr/<span class="built_in">local</span>/nginx \</span><br><span class="line">--pid-path=/var/run/nginx/nginx.pid \</span><br><span class="line">--lock-path=/var/locak/nginx.lock \</span><br><span class="line">--error-log-path=/var/<span class="built_in">log</span>/nginx/error.log \</span><br><span class="line">--http-log-path=/var/<span class="built_in">log</span>/nginx/access.log \</span><br><span class="line">--with-http_gzip_static_module \</span><br><span class="line">--http-client-body-temp-path=/var/temp/nginx/client \</span><br><span class="line">--http-proxy-temp-path=/var/temp/nginx/proxy \</span><br><span class="line">--http-fastcgi-temp-path=/var/temp/nginx/fastcgi \</span><br><span class="line">--http-uwsgi-temp-path=/var/temp/nginx/uwsgi \</span><br><span class="line">--http-scgi-temp-path=/var/temp/nginx/scgi</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>提示</strong></p>
+<p>注：\ 代表在命令行中换行，用于提高可读性</p>
+<p>配置命令：</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th align="left">命令</th>
+<th align="left">解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">–prefix</td>
+<td align="left">指定nginx安装目录</td>
+</tr>
+<tr>
+<td align="left">–pid-path</td>
+<td align="left">指向nginx的pid</td>
+</tr>
+<tr>
+<td align="left">–lock-path</td>
+<td align="left">锁定安装文件，防止被恶意篡改或误操作</td>
+</tr>
+<tr>
+<td align="left">–error-log-path</td>
+<td align="left">错误日志</td>
+</tr>
+<tr>
+<td align="left">–http-log-path</td>
+<td align="left">http日志</td>
+</tr>
+<tr>
+<td align="left">–with-http_gzip_static_module</td>
+<td align="left">启动gzip模块，在线实时压缩输出数据流</td>
+</tr>
+<tr>
+<td align="left">–http-client-body-temp-path</td>
+<td align="left">设定客户端请求的临时目录</td>
+</tr>
+<tr>
+<td align="left">–http-proxy-temp-path</td>
+<td align="left">设定http代理临时目录</td>
+</tr>
+<tr>
+<td align="left">–http-fastcgi-temp-path</td>
+<td align="left">设定fastcgi临时目录</td>
+</tr>
+<tr>
+<td align="left">–http-uwsgi-temp-path</td>
+<td align="left">设定uwsgi临时目录</td>
+</tr>
+<tr>
+<td align="left">–http-scgi-temp-path</td>
+<td align="left">设定scgi临时目录</td>
+</tr>
+</tbody></table>
+<h2 id="7-make编译"><a href="#7-make编译" class="headerlink" title="7. make编译"></a>7. make编译</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">make</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>提示</strong></p>
+<p>在nginx解压的目录进行make</p>
+</blockquote>
+<h2 id="8-安装"><a href="#8-安装" class="headerlink" title="8. 安装"></a>8. 安装</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">make install</span><br></pre></td></tr></table></figure>
+
+<h2 id="9-进入-usr-local-nginx-sbin目录启动nginx"><a href="#9-进入-usr-local-nginx-sbin目录启动nginx" class="headerlink" title="9. 进入/usr/local/nginx/sbin目录启动nginx"></a>9. 进入/usr/local/nginx/sbin目录启动nginx</h2><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">./ngin</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>提示</strong></p>
+<p>停止：./nginx -s stop</p>
+<p>优雅的停止：./nginx -s quit</p>
+<p>检测配置文件是否正常：./nginx -t</p>
+<p>重新加载：./nginx -s reload</p>
+</blockquote>
+<h2 id="10-打开浏览器，访问虚拟机所处内网ip即可nginx默认页面"><a href="#10-打开浏览器，访问虚拟机所处内网ip即可nginx默认页面" class="headerlink" title="10. 打开浏览器，访问虚拟机所处内网ip即可nginx默认页面"></a>10. 打开浏览器，访问虚拟机所处内网ip即可nginx默认页面</h2><blockquote>
+<p><strong>提示</strong></p>
+<p>服务器的公网ip:80即可访问</p>
+</blockquote>
+<ul>
+<li>TIPS：有些利用虚拟机安装nginx， 宿主机上根本访问不到，必须打开防火墙</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 开启防火墙的80端口访问</span></span><br><span class="line">firewall-cmd --zone=public --add-port=80/tcp --permanent</span><br><span class="line"><span class="comment"># 重启防火墙</span></span><br><span class="line">systemctl restart firewalld.service</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<table>
+<thead>
+<tr>
+<th align="left">命令</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">–zone</td>
+<td align="left">作用域</td>
+</tr>
+<tr>
+<td align="left">–add-port=80/tcp</td>
+<td align="left">添加端口，格式为：端口/通讯协议</td>
+</tr>
+<tr>
+<td align="left">–permanent</td>
+<td align="left">永久生效，没有此参数重启后失效</td>
+</tr>
+</tbody></table>
+</blockquote>
+<hr>
+<blockquote>
+<p><strong>注意事项</strong></p>
+<ol>
+<li><p>如果在云服务器安装，需要开启默认的nginx端口：80</p>
+</li>
+<li><p>如果在虚拟机安装，需要关闭防火墙</p>
+</li>
+<li><p>本地win或者mac需要关闭防火墙</p>
+</li>
+</ol>
+</blockquote>
+</div><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="mailto:undefined">liusheng</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="https://liusheng1992.github.io/myblog/2020/07/12/nginx1/">https://liusheng1992.github.io/myblog/2020/07/12/nginx1/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="https://liusheng1992.github.io/myblog" target="_blank">Dave</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/myblog/tags/Nginx/">Nginx</a></div><div class="post_share"></div></div><nav class="pagination_post" id="pagination"><div class="next-post pull-full"><a href="/myblog/2020/04/16/firewalld/"><img class="next_cover lazyload" data-src="/myblog/img/post.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">CentOS7 防火墙操作</div></div></a></div></nav></article></main><footer id="footer" style="background-image: url(/myblog/img/post.jpg)" data-type="photo"><div id="footer-wrap"><div class="copyright">&copy;2020 By liusheng</div></div></footer></div><section class="rightside" id="rightside"><div id="rightside-config-hide"><i class="fa fa-book" id="readmode" title="阅读模式"></i><i class="fa fa-plus" id="font_plus" title="放大字体"></i><i class="fa fa-minus" id="font_minus" title="缩小字体"></i><a class="translate_chn_to_cht" id="translateLink" href="javascript:translatePage();" title="简繁转换" target="_self">繁</a><i class="darkmode fa fa-moon-o" id="darkmode" title="夜间模式"></i></div><div id="rightside-config-show"><div id="rightside_config" title="设置"><i class="fa fa-cog" aria-hidden="true"></i></div><i class="fa fa-list-ul close" id="mobile-toc-button" title="目录" aria-hidden="true"></i><i class="fa fa-arrow-up" id="go-up" title="回到顶部" aria-hidden="true"></i></div></section><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/myblog/js/utils.js"></script><script src="/myblog/js/main.js"></script><script src="/myblog/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script id="canvas_nest" color="0,0,255" opacity="0.7" zIndex="-1" count="99" mobile="false" src="/myblog/js/third-party/canvas-nest.js"></script><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page@latest/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/lazysizes@latest/lazysizes.min.js" async=""></script><script src="/myblog/js/third-party/click_heart.js"></script></body></html>
